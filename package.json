@@ -1,0 +1,22 @@
+{
+  "scripts": {
+    "test": "mocha",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mrhadi/bowling-score-simulator.git"
+  },
+  "name": "bowling",
+  "version": "1.0.0",
+  "description": "Bowling Score Simulator",
+  "main": "app.js",
+  "directories": {
+    "test": "test"
+  },
+  "author": "Hadi Shad",
+  "license": "ISC",
+  "devDependencies": {
+    "mocha": "^5.2.0"
+  }
+}
