@@ -53,6 +53,7 @@ module.exports = {
     }
   },
   score() {
+    // Check there are at least 2 rolls
     if (this.rollsCounter < FRAME_ROLLS) {
       return 0;
     }
