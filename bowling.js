@@ -16,7 +16,7 @@ module.exports = {
   randomRollPair() {
     let firstRoll = Math.floor(Math.random() * TOTAL_PINS) + 1;
     let secondRoll = (firstRoll ===  TOTAL_PINS) ?
-      Math.floor(Math.random() * TOTAL_PINS) + 1
+      0
       :
       Math.floor(Math.random() * (TOTAL_PINS - firstRoll)) + 1;
 
@@ -53,6 +53,10 @@ module.exports = {
     }
   },
   score() {
+    if (this.rollsCounter < FRAME_ROLLS) {
+      return 0;
+    }
+
     let framePins = 0;
     let rollIndex = 0;
     let isSpare = false;

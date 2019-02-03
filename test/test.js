@@ -2,6 +2,30 @@ let assert = require('assert');
 let bowlingGame = require("../bowling");
 
 describe('Bowling Score', function() {
+  describe('No roll', function() {
+    it('Should return 0', function() {
+      bowlingGame.newGame();
+      assert.equal(bowlingGame.score(), 0);
+    });
+  });
+
+  describe('One roll', function() {
+    it('Should return 0', function() {
+      bowlingGame.newGame();
+      bowlingGame.roll(6);
+      assert.equal(bowlingGame.score(), 0);
+    });
+  });
+
+  describe('One frame', function() {
+    it('Should return 7', function() {
+      bowlingGame.newGame();
+      bowlingGame.roll(6);
+      bowlingGame.roll(1);
+      assert.equal(bowlingGame.score(), 7);
+    });
+  });
+
   describe('Simple game', function() {
     it('Should return 72', function() {
       bowlingGame.newGame();
