@@ -1,6 +1,7 @@
 # Bowling Score Calculator/Simulator
 
 Node.js app to calculate the bowling game score.
+The core functionality has been coded by JavaScript and by minor updates can be used on any JS platform.
 
 # Install Node.js
 
@@ -15,10 +16,10 @@ git clone https://github.com/mrhadi/bowling-score-simulator.git
 # Get dependencies
 npm install
 
-# Run Project
+# Run project
 npm start
 
-# Run Tests
+# Run tests
 npm test
 
 
