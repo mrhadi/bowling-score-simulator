@@ -1,108 +1,110 @@
+const rng = require('./utils/rng');
+
 const TOTAL_FRAMES = 10;
 const TOTAL_PINS = 10;
 const FRAME_ROLLS = 2;
 
-module.exports = {
-  isSpare: false,
-  isStrike: false,
-  debugOutput: false,
-  frameCounter: 0,
-  rollsCounter: 0,
-  totalScore: 0,
-  rolls: [],
-  debug(attr, value) {
-    if (this.debugOutput) console.log(attr, (value) ? value : '');
-  },
-  randomRollPair() {
-    let firstRoll = Math.floor(Math.random() * TOTAL_PINS) + 1;
-    let secondRoll = (firstRoll ===  TOTAL_PINS) ?
-      0
-      :
-      Math.floor(Math.random() * (TOTAL_PINS - firstRoll)) + 1;
+let isSpare = false;
+let isStrike = false;
+let frameCounter = 0;
+let rollsCounter = 0;
+let totalScore = 0;
+let rolls = [];
 
-    return {
-      firstRoll: firstRoll,
-      secondRoll: secondRoll
-    };
-  },
-  newGame() {
-    this.frameCounter = 1;
-    this.isSpare = false;
-    this.isStrike = false;
-    this.totalScore = 0;
-    this.resetRolls();
-  },
-  gaveOver() {
-    this.debug('Gave Over');
-    this.debug('Total Score:', this.score());
-  },
-  resetRolls() {
-    this.rolls = [];
-    this.rollsCounter = 0;
-  },
-  roll(noOfPins) {
-    this.debug('noOfPins:', noOfPins);
+let debugOutput = false
 
-    this.rolls.push(noOfPins);
-    this.rollsCounter++;
+const debug = (attr, value) => {
+  if (debugOutput) console.log(attr, value)
+};
 
-    // Check if it is Strike and then push a zero roll to keep it as 10|0 pair.
-    if (noOfPins === TOTAL_PINS) {
-      this.rolls.push(0);
-      this.rollsCounter++;
-    }
-  },
-  score() {
-    // Check there are at least 2 rolls
-    if (this.rollsCounter < FRAME_ROLLS) {
-      return 0;
-    }
+const resetRolls = () => {
+  rolls = [];
+  rollsCounter = 0
+};
 
-    let framePins = 0;
-    let rollIndex = 0;
-    let isSpare = false;
-    let isStrike = false;
+const newGame = (debugging = false) => {
+  debugOutput = debugging;
+  frameCounter = 1;
+  isSpare = false;
+  isStrike = false;
+  totalScore = 0;
+  resetRolls();
+};
 
-    for (;;) {
-      framePins = this.rolls[rollIndex] + this.rolls[rollIndex + 1];
+const randomRollPair = () => {
+  const firstRoll = rng(TOTAL_PINS);
+  const secondRoll = firstRoll ===  TOTAL_PINS
+    ? 0
+    : rng(TOTAL_PINS - firstRoll);
 
-      if (isSpare) {
-        isSpare = false;
-        this.totalScore += this.rolls[rollIndex - 2] + this.rolls[rollIndex - 1] + this.rolls[rollIndex];
-      }
-      else if (isStrike) {
-        isStrike = false;
+  return { firstRoll, secondRoll }
+};
 
-        // Check if the next frame is also a Strike
-        if (this.rolls[rollIndex] === TOTAL_PINS) {
-          this.totalScore += this.rolls[rollIndex - 2] + this.rolls[rollIndex] + this.rolls[rollIndex + 2];
-        }
-        else {
-          this.totalScore += this.rolls[rollIndex - 2] + this.rolls[rollIndex] + this.rolls[rollIndex + 1];
-        }
-      }
+const roll = noOfPins => {
+  debug('noOfPins', noOfPins);
 
-      if (framePins === TOTAL_PINS) {
-        if (this.rolls[rollIndex] === TOTAL_PINS) {
-          isStrike = true;
-        }
-        else {
-          isSpare = true;
-        }
-      }
-      else {
-        this.totalScore += framePins;
-      }
+  rolls.push(noOfPins);
+  rollsCounter++;
 
-      // Check if there is another roll pair available
-      if (rollIndex + 3 <= this.rollsCounter) {
-        rollIndex += FRAME_ROLLS;
-      }
-      else {
-        break;
-      }
-    }
-
-    return this.totalScore;
+  // Check if it is Strike and then push a zero roll to keep it as 10|0 pair.
+  if (noOfPins === TOTAL_PINS) {
+    rolls.push(0);
+    rollsCounter++;
   }
+};
+
+const calculateScore = () => {
+  // Check there are at least 2 rolls
+  if (rollsCounter < FRAME_ROLLS) return 0;
+
+  let framePins = 0;
+  let rollIndex = 0;
+  isSpare = false;
+  isStrike = false;
+
+  let countingScore = true;
+
+  while (countingScore) {
+    framePins = rolls[rollIndex] + rolls[rollIndex + 1];
+
+    if (isSpare) {
+      isSpare = false;
+      totalScore += rolls[rollIndex - 2] + rolls[rollIndex - 1] + rolls[rollIndex];
+    } else if (isStrike) {
+      isStrike = false;
+
+      // Check if the next frame is also a Strike
+      if (rolls[rollIndex] === TOTAL_PINS) {
+        totalScore += rolls[rollIndex - 2] + rolls[rollIndex] + rolls[rollIndex + 2];
+      } else {
+        totalScore += rolls[rollIndex - 2] + rolls[rollIndex] + rolls[rollIndex + 1];
+      }
+    }
+
+    if (framePins === TOTAL_PINS) {
+      if (rolls[rollIndex] === TOTAL_PINS) {
+        isStrike = true;
+      } else {
+        isSpare = true;
+      }
+    } else {
+      totalScore += framePins;
+    }
+
+    // Check if there is another roll pair available
+    if (rollIndex + 3 <= rollsCounter) {
+      rollIndex += FRAME_ROLLS;
+    } else {
+      countingScore = false;
+    }
+  }
+
+  return totalScore
+};
+
+module.exports = {
+  newGame,
+  randomRollPair,
+  roll,
+  calculateScore
 };

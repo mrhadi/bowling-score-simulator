@@ -1,15 +1,18 @@
-let bowlingGame = require("./bowling");
+const {
+  newGame,
+  randomRollPair,
+  roll,
+  calculateScore
+} = require("./bowling");
 
-bowlingGame.debugOutput = true;
-bowlingGame.newGame();
+newGame(true);
 
 for (let i = 0; i < 10; i++) {
-  const rndPair = bowlingGame.randomRollPair();
+  const { firstRoll, secondRoll } = randomRollPair();
 
-  bowlingGame.roll(rndPair.firstRoll);
+  roll(firstRoll);
 
-  if (rndPair.secondRoll !== 0)
-    bowlingGame.roll(rndPair.secondRoll);
+  if (secondRoll !== 0) roll(secondRoll)
 }
 
-console.log('Score: ', bowlingGame.score());
+console.log('Score: ', calculateScore());
